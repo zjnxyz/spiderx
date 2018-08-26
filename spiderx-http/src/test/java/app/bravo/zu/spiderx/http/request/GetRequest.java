@@ -33,17 +33,22 @@ public class GetRequest extends HttpRequest {
         }
 
         public GetRequestBuilder parameters(Map<String, String> parameters) {
-            request.setParameters(parameters);
+            request.getParameters().putAll(parameters);
             return this;
         }
 
         public GetRequestBuilder headers(Map<String, String> headers) {
-            request.setHeaders(headers);
+            request.getHeaders().putAll(headers);
             return this;
         }
 
         public GetRequestBuilder cookies(Map<String, String> cookies) {
-            request.setCookies(cookies);
+            request.getCookies().putAll(cookies);
+            return this;
+        }
+
+        public GetRequestBuilder extras(Map<String, Object> extras){
+            request.getExtras().putAll(extras);
             return this;
         }
 

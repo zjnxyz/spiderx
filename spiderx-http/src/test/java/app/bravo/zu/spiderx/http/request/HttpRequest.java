@@ -34,6 +34,12 @@ public class HttpRequest implements Cloneable{
 
     private Map<String, String> headers;
 
+    /**
+     * 额外透传字段
+     */
+    private Map<String,Object> extras;
+
+
     private String refer;
 
     /**
@@ -52,26 +58,8 @@ public class HttpRequest implements Cloneable{
         this.parameters = new HashMap<>();
         this.headers = new HashMap<>();
         this.cookies = new HashMap<>();
+        this.extras = new HashMap<>();
     }
-
-
-
-
-
-     static class HttpRequestBuilder {
-
-        private HttpRequest request;
-
-        HttpRequestBuilder (HttpRequest request) {
-             this.request = request;
-        }
-
-        public HttpRequestBuilder parameters(Map<String, String> parameters) {
-            request.setParameters(parameters);
-            return this;
-        }
-
-     }
 
 
      enum  HttpMethod {

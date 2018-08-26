@@ -34,17 +34,22 @@ public class PostRequest extends HttpRequest{
         }
 
         public PostRequestBuilder parameters(Map<String, String> parameters) {
-            request.setParameters(parameters);
+            request.getParameters().putAll(parameters);
             return this;
         }
 
         public PostRequestBuilder headers(Map<String, String> headers) {
-            request.setHeaders(headers);
+            request.getHeaders().putAll(headers);
             return this;
         }
 
         public PostRequestBuilder cookies(Map<String, String> cookies) {
-            request.setCookies(cookies);
+            request.getCookies().putAll(cookies);
+            return this;
+        }
+
+        public PostRequestBuilder extras(Map<String, Object> extras){
+            request.getExtras().putAll(extras);
             return this;
         }
 
