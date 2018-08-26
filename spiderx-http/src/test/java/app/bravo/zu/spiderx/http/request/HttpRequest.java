@@ -5,16 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * 请求
  */
 @Data
-@Builder
 @AllArgsConstructor
-@NoArgsConstructor
-public class HttpRequest {
+public class HttpRequest implements Cloneable{
 
     private String url;
 
@@ -41,6 +40,38 @@ public class HttpRequest {
      * 编码
      */
     private String charset;
+
+
+    public HttpRequest(String url, HttpMethod httpMethod) {
+        this();
+        this.url = url;
+        this.method = httpMethod;
+    }
+
+    public HttpRequest() {
+        this.parameters = new HashMap<>();
+        this.headers = new HashMap<>();
+        this.cookies = new HashMap<>();
+    }
+
+
+
+
+
+     static class HttpRequestBuilder {
+
+        private HttpRequest request;
+
+        HttpRequestBuilder (HttpRequest request) {
+             this.request = request;
+        }
+
+        public HttpRequestBuilder parameters(Map<String, String> parameters) {
+            request.setParameters(parameters);
+            return this;
+        }
+
+     }
 
 
      enum  HttpMethod {

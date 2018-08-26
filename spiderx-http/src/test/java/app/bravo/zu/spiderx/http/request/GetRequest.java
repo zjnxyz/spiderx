@@ -1,16 +1,25 @@
 package app.bravo.zu.spiderx.http.request;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.util.Map;
+
+import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.GET;
 
 /**
  * get 请求
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class GetRequest extends HttpRequest {
 
     private GetRequest(String url) {
-        super.setUrl(url);
-        super.setMethod(HttpMethod.GET);
+        super(url, GET);
+    }
+
+    public static GetRequestBuilder builder (String url){
+        return new GetRequestBuilder(url);
     }
 
 
@@ -19,9 +28,25 @@ public class GetRequest extends HttpRequest {
 
         private final GetRequest request;
 
-        public GetRequestBuilder (String url) {
+        GetRequestBuilder (String url) {
             request = new GetRequest(url);
         }
+
+        public GetRequestBuilder parameters(Map<String, String> parameters) {
+            request.setParameters(parameters);
+            return this;
+        }
+
+        public GetRequestBuilder headers(Map<String, String> headers) {
+            request.setHeaders(headers);
+            return this;
+        }
+
+        public GetRequestBuilder cookies(Map<String, String> cookies) {
+            request.setCookies(cookies);
+            return this;
+        }
+
 
         public GetRequest build() {
             return request;
