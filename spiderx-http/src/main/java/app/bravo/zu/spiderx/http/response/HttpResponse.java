@@ -1,6 +1,6 @@
 package app.bravo.zu.spiderx.http.response;
 
-import java.io.ByteArrayInputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 import lombok.Data;
@@ -14,10 +14,9 @@ import lombok.Data;
 @Data
 public class HttpResponse {
 
-    /**
-     * 流
-     */
-    private ByteArrayInputStream bodyRaw;
+    public HttpResponse () {
+        headers = new HashMap<>();
+    }
 
     /**
      * 文本
@@ -43,5 +42,10 @@ public class HttpResponse {
      * 状态
      */
     private int status;
+
+    public HttpResponse header(String key, String value) {
+        headers.put(key, value);
+        return this;
+    }
 
 }

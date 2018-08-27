@@ -1,11 +1,13 @@
 package app.bravo.zu.spiderx.http.request;
 
+import app.bravo.zu.spiderx.http.Site;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Map;
 
 import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.POST;
+
 
 /**
  * post 请求参数
@@ -55,6 +57,11 @@ public class PostRequest extends HttpRequest{
 
         public PostRequestBuilder requestBody(String body) {
             request.setRequestBody(body);
+            return this;
+        }
+
+        public PostRequestBuilder site(Site site) {
+            request.setSite(site);
             return this;
         }
 

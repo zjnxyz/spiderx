@@ -1,5 +1,6 @@
 package app.bravo.zu.spiderx.http.request;
 
+import app.bravo.zu.spiderx.http.Site;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -49,6 +50,11 @@ public class GetRequest extends HttpRequest {
 
         public GetRequestBuilder extras(Map<String, Object> extras){
             request.getExtras().putAll(extras);
+            return this;
+        }
+
+        public GetRequestBuilder site(Site site) {
+            request.setSite(site);
             return this;
         }
 

@@ -1,21 +1,38 @@
 package app.bravo.zu.spiderx.http.request;
 
+import app.bravo.zu.spiderx.http.Site;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * 请求
+ * @author riverzu
  */
 @Data
 @AllArgsConstructor
 public class HttpRequest implements Cloneable{
 
+    /**
+     * json
+     */
+    public final static String JSON_MEDIA_TYPE = "application/json";
+
+    /**
+     * 表单
+     */
+    public final static String FORM_MEDIA_TYPE = "application/x-www-form-urlencoded";
+
+    public final static String HTML_CONTENT_TYPE = "text/html; charset=utf-8";
+
     private String url;
+
+    /**
+     * 网站信息
+     */
+    private Site site;
 
     /**
      * 请求方法
@@ -62,21 +79,25 @@ public class HttpRequest implements Cloneable{
     }
 
 
-     enum  HttpMethod {
+    public enum  HttpMethod {
 
-         /**
-          * GET
-          */
-         GET,
+        /**
+         * GET
+         */
+        GET,
 
-         /**
-          * post
-          */
-         POST,
+        /**
+         * post
+         */
+        POST,
 
-         /**
-          * put
-          */
-         PUT
+        /**
+         * put
+         */
+        PUT
     }
+
+
 }
+
+
