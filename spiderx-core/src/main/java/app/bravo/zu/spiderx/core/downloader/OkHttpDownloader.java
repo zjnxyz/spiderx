@@ -21,7 +21,7 @@ public class OkHttpDownloader implements Downloader<HttpRequest, HttpResponse>{
     @Override
     public Page<HttpRequest, HttpResponse> process(Task<HttpRequest> task) {
         HttpResponse response = client.execute(task.getRequest());
-        Page<HttpRequest, HttpResponse> page = Page.builder().response(response).task(task).status(response.getStatus()).build()
+        //Page<HttpRequest, HttpResponse> page = Page.builder().response(response).task(task).status(response.getStatus()).build()
         return null;
     }
 }
