@@ -65,9 +65,9 @@ public class ProxySelector {
     /**
      * 检查一个代理，如果代理无效时，返回一个新的有效代理
      * @param proxy proxy
-     * @return
+     * @return proxy
      */
-    private Proxy checkAndGet(Proxy proxy) {
+    public Proxy checkAndGet(Proxy proxy) {
         if (proxy == null) {
             return select();
         }

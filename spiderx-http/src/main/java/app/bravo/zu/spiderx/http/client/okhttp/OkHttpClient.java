@@ -66,7 +66,7 @@ public class OkHttpClient implements HttpClient {
         }
         okBuilder.followRedirects(true).retryOnConnectionFailure(true);
         if (site.isUseCookie()) {
-            okBuilder.cookieJar(CookiesManager.instance());
+            okBuilder.cookieJar(new CookiesManager(site.getCookieProvider()));
         }
         if (site.isUseProxy()) {
             //TODO 代理
@@ -141,13 +141,6 @@ public class OkHttpClient implements HttpClient {
             if (MapUtils.isNotEmpty(request.getHeaders())) {
                 // 设置请求头
                 request.getHeaders().forEach(requestBuilder::addHeader);
-            }
-
-            if (MapUtils.isNotEmpty(request.getCookies())){
-                //设置请求头
-                List<String> c = new ArrayList<>();
-                request.getCookies().forEach((k,v) -> c.add(k + "=" + v));
-                requestBuilder.addHeader("cookie", Joiner.on(";").skipNulls().join(c));
             }
             return requestBuilder;
         }

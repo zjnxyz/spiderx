@@ -1,6 +1,8 @@
 package app.bravo.zu.spiderx.http.request;
 
 import app.bravo.zu.spiderx.http.Site;
+import app.bravo.zu.spiderx.http.cookie.CookieProvider;
+import app.bravo.zu.spiderx.http.cookie.DefaultCookieProvider;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -44,10 +46,6 @@ public class HttpRequest implements Cloneable{
      */
     private Map<String, String> parameters;
 
-    /**
-     * cookies
-     */
-    private Map<String, String> cookies;
 
     private Map<String, String> headers;
 
@@ -74,7 +72,6 @@ public class HttpRequest implements Cloneable{
     public HttpRequest() {
         this.parameters = new HashMap<>();
         this.headers = new HashMap<>();
-        this.cookies = new HashMap<>();
         this.extras = new HashMap<>();
     }
 

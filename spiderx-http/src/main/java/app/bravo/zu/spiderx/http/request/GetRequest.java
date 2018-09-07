@@ -1,6 +1,7 @@
 package app.bravo.zu.spiderx.http.request;
 
 import app.bravo.zu.spiderx.http.Site;
+import app.bravo.zu.spiderx.http.cookie.CookieProvider;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -9,7 +10,9 @@ import java.util.Map;
 import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.GET;
 
 /**
+ *
  * get 请求
+ * @author riverzu
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -40,11 +43,6 @@ public class GetRequest extends HttpRequest {
 
         public GetRequestBuilder headers(Map<String, String> headers) {
             request.getHeaders().putAll(headers);
-            return this;
-        }
-
-        public GetRequestBuilder cookies(Map<String, String> cookies) {
-            request.getCookies().putAll(cookies);
             return this;
         }
 

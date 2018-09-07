@@ -1,6 +1,7 @@
 package app.bravo.zu.spiderx.http.request;
 
 import app.bravo.zu.spiderx.http.Site;
+import app.bravo.zu.spiderx.http.cookie.CookieProvider;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -42,11 +43,6 @@ public class PostRequest extends HttpRequest{
 
         public PostRequestBuilder headers(Map<String, String> headers) {
             request.getHeaders().putAll(headers);
-            return this;
-        }
-
-        public PostRequestBuilder cookies(Map<String, String> cookies) {
-            request.getCookies().putAll(cookies);
             return this;
         }
 
