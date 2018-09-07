@@ -12,6 +12,8 @@ import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.POST;
 
 /**
  * post 请求参数
+ *
+ * @author riverzu
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
