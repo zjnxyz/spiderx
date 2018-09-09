@@ -77,7 +77,6 @@ public class Proxy {
 
 
     public java.net.Proxy toJavaNetProxy() {
-
         return new java.net.Proxy(java.net.Proxy.Type.HTTP,new InetSocketAddress(ip , port));
     }
 

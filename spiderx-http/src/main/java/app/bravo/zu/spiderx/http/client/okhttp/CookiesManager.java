@@ -8,6 +8,7 @@ import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.HttpUrl;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +32,7 @@ public class CookiesManager implements CookieJar {
     public synchronized void saveFromResponse(HttpUrl httpUrl, List<Cookie> cookies) {
         log.info("cookie host={}", httpUrl.host());
         List<app.bravo.zu.spiderx.http.cookie.Cookie> list = cookies.stream().filter(Objects::nonNull)
-                .map(t -> new app.bravo.zu.spiderx.http.cookie.Cookie(t.name(), t.value()))
+                .map(t -> new app.bravo.zu.spiderx.http.cookie.Cookie(t.name(), t.value(), t.domain()))
                 .collect(toList());
         cookieProvider.save(httpUrl.host(), list);
     }
@@ -45,7 +46,8 @@ public class CookiesManager implements CookieJar {
         }
         return cookieGroup.getCookies().stream().filter(Objects::nonNull).map(t -> {
             Cookie.Builder builder = new Cookie.Builder();
-            builder.name(t.getName()).value(t.getValue());
+            builder.name(t.getName()).value(t.getValue())
+                    .domain(StringUtils.isNotEmpty(t.getDomain()) ? t.getDomain() : cookieGroup.getDomain());
             return builder.build();
         }).collect(toList());
     }

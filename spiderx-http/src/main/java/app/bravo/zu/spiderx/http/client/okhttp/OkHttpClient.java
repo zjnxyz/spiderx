@@ -2,21 +2,19 @@ package app.bravo.zu.spiderx.http.client.okhttp;
 
 import app.bravo.zu.spiderx.http.Site;
 import app.bravo.zu.spiderx.http.client.HttpClient;
+import app.bravo.zu.spiderx.http.exception.HttpException;
+import app.bravo.zu.spiderx.http.proxy.Proxy;
 import app.bravo.zu.spiderx.http.request.HttpRequest;
 import app.bravo.zu.spiderx.http.request.PostRequest;
 import app.bravo.zu.spiderx.http.response.HttpResponse;
-import com.google.common.base.Joiner;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
 
 import javax.net.ssl.*;
-import java.io.IOException;
 import java.security.cert.CertificateException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.GET;
@@ -26,15 +24,21 @@ import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.POST;
  * okHttp客户端
  * @author riverzu
  */
+@Slf4j
 public class OkHttpClient implements HttpClient {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OkHttpClient.class);
 
     private final static MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
 
+    private final static String CONTENT_TYPE = "Content-Type";
+
+    private final static String USER_AGENT = "User-Agent";
+
     private okhttp3.OkHttpClient.Builder okBuilder;
 
+    private final Site site;
+
     public OkHttpClient(Site site) {
+        this.site = site;
         okBuilder = new okhttp3.OkHttpClient.Builder();
         try {
             X509TrustManager x509TrustManager = new X509TrustManager() {
@@ -62,14 +66,18 @@ public class OkHttpClient implements HttpClient {
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
             okBuilder.sslSocketFactory(sslSocketFactory, x509TrustManager).hostnameVerifier(hostnameVerifier);
         } catch (Exception e) {
-            LOGGER.error("ssl init fail.err={}", e.getMessage(), e);
+            log.error("ssl init fail.err={}", e.getMessage(), e);
         }
         okBuilder.followRedirects(true).retryOnConnectionFailure(true);
         if (site.isUseCookie()) {
             okBuilder.cookieJar(new CookiesManager(site.getCookieProvider()));
         }
         if (site.isUseProxy()) {
-            //TODO 代理
+            Proxy proxy = site.getProxy();
+            if (proxy != null){
+                log.debug("proxy 信息：{}", proxy);
+                okBuilder.proxy(proxy.toJavaNetProxy());
+            }
         }
 
         if (site.getConnectTimeout() > 0){
@@ -80,37 +88,42 @@ public class OkHttpClient implements HttpClient {
     }
 
     @Override
-    public HttpResponse execute(HttpRequest request) {
-        Request.Builder requestBuilder = OkHttpRequestGenerator.getOkHttpRequestBuilder(request);
+    public Mono<HttpResponse> execute(HttpRequest request) {
+        Request.Builder requestBuilder = OkHttpRequestGenerator.getOkHttpRequestBuilder(request, site);
         if (requestBuilder == null){
             return null;
         }
-
-        okhttp3.OkHttpClient client = okBuilder.build();
-        try {
-            Response response = client.newCall(requestBuilder.build()).execute();
-            HttpResponse httpResponse = new HttpResponse();
-            httpResponse.setStatus(response.code());
-            ResponseBody responseBody = response.body();
-            httpResponse.setCharset(response.header("Content-Type"));
-            if (responseBody != null) {
-                httpResponse.setBodyText(responseBody.string());
+        return Mono.just(requestBuilder.build()).map(t -> {
+            try {
+                return okBuilder.build().newCall(t).execute();
+            }catch (Exception e){
+                log.error("远程请求异常，url="+request.getUrl(), e);
+                throw new HttpException("远程请求异常", e);
             }
+        }).map(t ->{
+            HttpResponse httpResponse = new HttpResponse();
+            httpResponse.setStatus(t.code());
+            ResponseBody responseBody = t.body();
+            httpResponse.setCharset(t.header(CONTENT_TYPE));
             //处理header信息
-            response.headers().names().forEach(t -> httpResponse.header(t, response.header(t)));
-            return httpResponse;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            t.headers().names().forEach(t1 -> httpResponse.header(t1, t.header(t1)));
 
-        return null;
+            if (responseBody != null) {
+                try {
+                    httpResponse.setBodyText(responseBody.string());
+                }catch (Exception e){
+                    log.error("httpResponse 获取响应体异常", e);
+                }
+            }
+            return httpResponse;
+        });
     }
 
 
 
     private static class OkHttpRequestGenerator {
 
-         static Request.Builder getOkHttpRequestBuilder(HttpRequest request) {
+         static Request.Builder getOkHttpRequestBuilder(HttpRequest request, Site site) {
             Request.Builder requestBuilder = new Request.Builder();
             if (request.getMethod() == GET) {
                 HttpUrl httpUrl = HttpUrl.parse(request.getUrl());
@@ -136,6 +149,10 @@ public class OkHttpClient implements HttpClient {
                 }
                 requestBuilder.post(body);
                 requestBuilder.url(request.getUrl());
+            }
+
+            if (!request.getHeaders().containsKey(USER_AGENT)) {
+                request.getHeaders().put(USER_AGENT, site.getUserAgent());
             }
 
             if (MapUtils.isNotEmpty(request.getHeaders())) {

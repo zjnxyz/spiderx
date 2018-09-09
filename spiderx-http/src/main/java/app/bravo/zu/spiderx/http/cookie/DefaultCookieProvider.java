@@ -36,6 +36,19 @@ public class DefaultCookieProvider implements CookieProvider {
         return DefaultCookieProviderHolder.provider;
     }
 
+    /**
+     * 初始化cookie
+     *
+     * @param domain domain
+     * @param cookieStr cookieStr
+     * @return DefaultCookieProvider
+     */
+    public static DefaultCookieProvider instance(String domain, String cookieStr) {
+        DefaultCookieProvider provider = DefaultCookieProviderHolder.provider;
+        provider.save(domain, cookieStr);
+        return provider;
+    }
+
 
     private static class DefaultCookieProviderHolder{
         static DefaultCookieProvider provider = new DefaultCookieProvider();

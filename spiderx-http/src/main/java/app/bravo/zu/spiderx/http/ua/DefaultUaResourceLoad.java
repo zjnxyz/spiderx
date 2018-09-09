@@ -1,5 +1,7 @@
 package app.bravo.zu.spiderx.http.ua;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -11,6 +13,7 @@ import java.util.List;
  *
  * @author riverzu
  */
+@Slf4j
 public class DefaultUaResourceLoad implements UaResourceLoad {
 
     @Override
@@ -25,19 +28,14 @@ public class DefaultUaResourceLoad implements UaResourceLoad {
                             uas.add(Ua.builder().category(category).name("default").value(t1).build())
                     );
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.warn(String.format("加载ua配置文件 name=%s 失败", t.getFileName().toString()),e);
                 }
             });
         } catch (IOException e) {
             e.printStackTrace();
+            log.warn(String.format("文件夹 path=%s 未找到", path),e);
         }
         return uas;
-    }
-
-
-    public static void main(String[] args) {
-        DefaultUaResourceLoad load = new DefaultUaResourceLoad();
-        System.out.println(load.load());
     }
 
 }

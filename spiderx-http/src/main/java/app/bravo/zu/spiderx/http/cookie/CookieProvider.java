@@ -33,15 +33,18 @@ public interface CookieProvider {
          if (StringUtils.isEmpty(cookieStr)){
              return;
          }
+         List<String> l = Splitter.on(";").trimResults().omitEmptyStrings()
+                 .splitToList(cookieStr);
+         System.out.println(l);
 
          List<Cookie> cookies = Splitter.on(";").trimResults().omitEmptyStrings()
                  .splitToList(cookieStr).stream()
                  .filter(StringUtils::isNotEmpty).map(t -> {
-                     List<String> elements = Splitter.on("=").omitEmptyStrings().trimResults().splitToList(t);
-                     if (elements.size() == 2){
-                        return new Cookie(elements.get(0), elements.get(1));
+                     int index = t.indexOf("=");
+                     if (index == -1) {
+                         return null;
                      }
-                     return null;
+                     return new Cookie(t.substring(0, index), t.substring(index+1, t.length()));
          }).filter(Objects::nonNull).collect(toList());
          save(domain, cookies);
      }

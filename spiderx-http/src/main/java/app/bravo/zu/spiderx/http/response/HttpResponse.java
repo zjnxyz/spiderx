@@ -48,4 +48,15 @@ public class HttpResponse {
         return this;
     }
 
+    /**
+     * 失败响应
+     *
+     * @return response
+     */
+    public static HttpResponse error() {
+        HttpResponse response = new HttpResponse();
+        response.setStatus(404);
+        return response;
+    }
+
 }
