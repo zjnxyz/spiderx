@@ -12,7 +12,7 @@ import lombok.Data;
  * @createDate 2018/8/26
  */
 @Data
-public class HttpResponse {
+public class HttpResponse implements Cloneable {
 
     public HttpResponse () {
         headers = new HashMap<>();
@@ -46,6 +46,11 @@ public class HttpResponse {
     public HttpResponse header(String key, String value) {
         headers.put(key, value);
         return this;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     /**

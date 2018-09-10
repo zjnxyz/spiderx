@@ -2,20 +2,20 @@ package app.bravo.zu.spiderx.core.downloader;
 
 import app.bravo.zu.spiderx.core.Page;
 import app.bravo.zu.spiderx.core.Task;
+import reactor.core.publisher.Mono;
 
 /**
  * 网页下载器
- * @param <REQUEST>
- * @param <RESPONSE>
+ * @author riverzu
  */
-public interface Downloader<REQUEST, RESPONSE> {
+public interface Downloader {
 
     /**
      * 进行页面下载
      * @param task 待处理任务
      * @return page
      */
-    default Page<REQUEST, RESPONSE> process(Task<REQUEST> task) {
+    default Mono<Page> process(Task task) {
         return null;
     }
 

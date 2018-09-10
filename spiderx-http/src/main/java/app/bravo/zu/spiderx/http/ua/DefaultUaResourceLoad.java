@@ -32,7 +32,6 @@ public class DefaultUaResourceLoad implements UaResourceLoad {
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
             log.warn(String.format("文件夹 path=%s 未找到", path),e);
         }
         return uas;

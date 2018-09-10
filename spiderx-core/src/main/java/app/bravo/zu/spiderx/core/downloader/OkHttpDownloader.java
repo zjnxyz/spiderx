@@ -4,10 +4,17 @@ import app.bravo.zu.spiderx.core.Page;
 import app.bravo.zu.spiderx.core.Task;
 import app.bravo.zu.spiderx.http.Site;
 import app.bravo.zu.spiderx.http.client.okhttp.OkHttpClient;
-import app.bravo.zu.spiderx.http.request.HttpRequest;
 import app.bravo.zu.spiderx.http.response.HttpResponse;
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
-public class OkHttpDownloader implements Downloader<HttpRequest, HttpResponse>{
+/**
+ * okHttp 下载器
+ *
+ * @author riverzu
+ */
+@Slf4j
+public class OkHttpDownloader implements Downloader {
 
     private final OkHttpClient client;
     /**
@@ -19,9 +26,16 @@ public class OkHttpDownloader implements Downloader<HttpRequest, HttpResponse>{
     }
 
     @Override
-    public Page<HttpRequest, HttpResponse> process(Task<HttpRequest> task) {
-//        HttpResponse response = client.execute(task.getRequest());
-        //Page<HttpRequest, HttpResponse> page = Page.builder().response(response).task(task).status(response.getStatus()).build()
-        return null;
+    public Mono<Page> process(Task task) {
+        Mono<Page> mono;
+        if (task == null || task.getRequest() == null){
+            log.warn("task 和 request 都不能为空");
+            mono = Mono.just(Page.error(task));
+        }else {
+            mono = client.execute(task.getRequest()).doOnError(t -> log.error("请求异常", t))
+                    .onErrorReturn(HttpResponse.error())
+                    .map(t -> Page.builder().status(t.getStatus()).task(task).response(t).build());
+        }
+        return mono;
     }
 }

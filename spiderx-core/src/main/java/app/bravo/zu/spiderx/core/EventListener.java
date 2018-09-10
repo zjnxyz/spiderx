@@ -2,6 +2,8 @@ package app.bravo.zu.spiderx.core;
 
 /**
  * 事件监听器
+ *
+ * @author riverzu
  */
 public interface EventListener {
 
@@ -10,7 +12,7 @@ public interface EventListener {
      * @param task
      * @param ctx
      */
-    default void beforeDownload(Task<?> task, SpiderContext ctx) {
+    default void beforeDownload(Task task, SpiderContext ctx) {
 
     }
 
