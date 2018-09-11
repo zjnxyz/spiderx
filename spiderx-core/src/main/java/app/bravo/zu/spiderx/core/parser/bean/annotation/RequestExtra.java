@@ -7,7 +7,7 @@ import java.lang.annotation.*;
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Field
+@Element
 @Inherited
 public @interface RequestExtra {
 

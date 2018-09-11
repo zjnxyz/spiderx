@@ -16,7 +16,7 @@ public class OkHttpDownloaderTest {
                 .build();
         Downloader downloader = new OkHttpDownloader(site);
         Task task = Task.builder().uuid("uuid-1").priority(1)
-                .request(GetRequest.builder("https://www.baidu.com/").build())
+                .request(GetRequest.builder("http://www.baidu.com/").build())
                 .build();
         downloader.process(task).subscribe(System.out::println);
     }

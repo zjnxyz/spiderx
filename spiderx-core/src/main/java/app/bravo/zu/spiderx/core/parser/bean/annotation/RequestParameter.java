@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Field
+@Element
 public @interface RequestParameter {
 
 	String value() default "";

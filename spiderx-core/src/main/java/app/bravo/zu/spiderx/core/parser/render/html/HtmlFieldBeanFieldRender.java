@@ -4,6 +4,7 @@ import app.bravo.zu.spiderx.core.Page;
 import app.bravo.zu.spiderx.core.parser.bean.SpiderBean;
 import app.bravo.zu.spiderx.core.parser.bean.annotation.HtmlField;
 import app.bravo.zu.spiderx.core.parser.render.BeanFieldRender;
+import app.bravo.zu.spiderx.core.parser.render.BeanRender;
 import app.bravo.zu.spiderx.core.parser.render.BeanRenderFactory;
 import app.bravo.zu.spiderx.core.parser.render.FieldDescribe;
 import app.bravo.zu.spiderx.core.utils.BeanUtils2;
@@ -54,7 +55,7 @@ public class HtmlFieldBeanFieldRender implements BeanFieldRender {
         } else {
             //单个值
             String value = page.getHtml().xpath(htmlField.xPath()).get();
-            if (StringUtils.isNotEmpty(value)) {
+            if (StringUtils.isEmpty(value)) {
                 return;
             }
             if (ReflectUtils.haveSuperType(type, SpiderBean.class)) {
@@ -83,7 +84,12 @@ public class HtmlFieldBeanFieldRender implements BeanFieldRender {
             log.warn("page clone 失败");
             return null;
         }
-        return BeanRenderFactory.instance().get(clz).inject(clz, subPage);
+        BeanRender beanRender = BeanRenderFactory.instance().get(clz);
+        if (beanRender == null) {
+            log.error("clz={}, 未找到对应的beanRender", clz);
+            return null;
+        }
+        return beanRender.inject(clz, subPage);
     }
 
     private List<Object> beansInject(Class<? extends SpiderBean> clz, Page page, HtmlField htmlField) {

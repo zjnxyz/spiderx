@@ -1,12 +1,16 @@
 package app.bravo.zu.spiderx.http.ua;
 
+import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * ua资源默认加载器
@@ -16,25 +20,68 @@ import java.util.List;
 @Slf4j
 public class DefaultUaResourceLoad implements UaResourceLoad {
 
+    /**
+     * 1024
+     */
+    private final static int BUFFER_SIZE = 0x400;
+
     @Override
     public List<Ua> load() {
-        List<Ua> uas = new ArrayList<>();
-        String path = DefaultUaResourceLoad.class.getResource("/").getPath()+"ua/";
-        try {
-            Files.list(Paths.get(path)).forEach(t ->  {
-                        String category = t.getFileName().toString().replace(".txt","");
-                try {
-                    Files.lines(t).forEach(t1 ->
-                            uas.add(Ua.builder().category(category).name("default").value(t1).build())
-                    );
-                } catch (IOException e) {
-                    log.warn(String.format("加载ua配置文件 name=%s 失败", t.getFileName().toString()),e);
+
+        return Arrays.stream(UaConfig.UA_FILES).filter(StringUtils::isNotEmpty).map(t -> {
+            InputStream input = null;
+            try {
+                input = this.getClass().getResourceAsStream(t);
+                return inputStream2String(input);
+            } catch (Exception e) {
+                log.error("加载ua配置出错,file=" + t, e);
+                if (input != null) {
+                    try {
+                        input.close();
+                    } catch (IOException e1) {
+                        log.error("关闭流出错了", e1);
+                    }
                 }
-            });
-        } catch (IOException e) {
-            log.warn(String.format("文件夹 path=%s 未找到", path),e);
+            }
+            return null;
+        }).filter(StringUtils::isNotEmpty)
+                .flatMap(t -> Splitter.on("\r\n").omitEmptyStrings().trimResults().splitToList(t).stream())
+                .map(t -> Ua.builder().category("cate").name("default").value(t).build())
+                .collect(toList());
+    }
+
+
+    /**
+     * 从输入流读取数据
+     *
+     * @param inStream instream
+     * @return byte[]
+     * @throws Exception exception
+     */
+    private static byte[] readInputStream(InputStream inStream) throws IOException {
+        ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int len = 0;
+        while ((len = inStream.read(buffer)) != -1) {
+            if (len != 0) {
+                outSteam.write(buffer, 0, len);
+            }
         }
-        return uas;
+        outSteam.close();
+        inStream.close();
+        return outSteam.toByteArray();
+    }
+
+    /**
+     * 从输入流读取数据
+     *
+     * @param inStream in
+     * @return string
+     * @throws Exception exception
+     */
+    private static String inputStream2String(InputStream inStream) throws IOException {
+
+        return new String(readInputStream(inStream), "UTF-8");
     }
 
 }

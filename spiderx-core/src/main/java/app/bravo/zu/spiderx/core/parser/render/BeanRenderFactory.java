@@ -26,7 +26,13 @@ public class BeanRenderFactory {
     }
 
     public BeanRender get(Class<? extends SpiderBean> clz) {
-        return BEAN_RENDER_MAP.get(clz);
+        Class<? extends SpiderBean> key = BEAN_RENDER_MAP.keySet().stream()
+                .filter(t -> t.isAssignableFrom(clz)).findFirst()
+                .orElse(null);
+        if (key == null) {
+            return null;
+        }
+        return BEAN_RENDER_MAP.get(key);
     }
 
     public static BeanRenderFactory instance() {
