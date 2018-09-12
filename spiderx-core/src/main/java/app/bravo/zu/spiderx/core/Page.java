@@ -3,10 +3,8 @@ package app.bravo.zu.spiderx.core;
 import app.bravo.zu.spiderx.core.parser.selector.Html;
 import app.bravo.zu.spiderx.core.parser.selector.Json;
 import app.bravo.zu.spiderx.http.response.HttpResponse;
-import com.google.common.collect.Maps;
 import lombok.Builder;
 import lombok.Data;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -90,6 +88,8 @@ public class Page implements Cloneable{
             HttpResponse response = (HttpResponse) page.getResponse().clone();
             response.setBodyText(bodyText);
             page.setResponse(response);
+            page.setHtml(null);
+            page.setJson(null);
             return page;
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();

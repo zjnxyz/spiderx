@@ -17,11 +17,6 @@ public class RequestExtraBeanFieldRender implements BeanFieldRender{
 
     @Override
     public void doRender(Page page, BeanMap beanMap, FieldDescribe fieldDescribe) {
-        if (fieldDescribe == null) {
-            log.warn("字段描述信息不能为空");
-            return;
-        }
-
         RequestExtra requestExtra = (RequestExtra) fieldDescribe.getAnnotation();
         String name = StringUtils.isEmpty(requestExtra.value()) ? fieldDescribe.getName()
                 : requestExtra.value();

@@ -1,6 +1,7 @@
 package app.bravo.zu.spiderx.core.parser.render;
 
 import app.bravo.zu.spiderx.core.Page;
+import app.bravo.zu.spiderx.core.parser.bean.SpiderBean;
 import org.apache.commons.beanutils.BeanMap;
 
 /**
@@ -8,7 +9,6 @@ import org.apache.commons.beanutils.BeanMap;
  * @author riverzu
  */
 public interface BeanFieldRender {
-
 
     /**
      * 渲染
@@ -32,4 +32,24 @@ public interface BeanFieldRender {
      * @param fieldDescribe fd
      */
     void doRender(Page page, BeanMap beanMap, FieldDescribe fieldDescribe);
+
+    /**
+     * bean 注入
+     *
+     * @param clz  clz
+     * @param page page
+     * @param body body
+     * @return object
+     */
+    default Object beanInject(Class<? extends SpiderBean> clz, Page page, String body) {
+        Page subPage = page.clone(body);
+        if (subPage == null) {
+            return null;
+        }
+        BeanRender beanRender = BeanRenderFactory.instance().get(clz);
+        if (beanRender == null) {
+            return null;
+        }
+        return beanRender.inject(clz, subPage);
+    }
 }

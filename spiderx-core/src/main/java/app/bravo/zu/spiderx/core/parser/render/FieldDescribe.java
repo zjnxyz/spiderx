@@ -1,6 +1,5 @@
 package app.bravo.zu.spiderx.core.parser.render;
 
-import lombok.Data;
 import lombok.Getter;
 
 import java.lang.annotation.Annotation;
@@ -18,6 +17,11 @@ public class FieldDescribe {
      * 返回值类型
      */
     private Class<?> type;
+
+    /**
+     * 包好泛型的类型
+     */
+    private Type genericType;
 
     /**
      * 字段上的注释
@@ -52,7 +56,10 @@ public class FieldDescribe {
      * @return type
      */
     public Type getGenericType() {
-        return field.getGenericType();
+        if (genericType == null) {
+            genericType = field.getGenericType();
+        }
+        return genericType;
     }
 
     /**

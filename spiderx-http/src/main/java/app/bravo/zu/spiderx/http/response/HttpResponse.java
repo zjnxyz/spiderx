@@ -1,9 +1,10 @@
 package app.bravo.zu.spiderx.http.response;
 
+import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import lombok.Data;
 
 /**
  * 类/接口注释
@@ -46,6 +47,14 @@ public class HttpResponse implements Cloneable {
     public HttpResponse header(String key, String value) {
         headers.put(key, value);
         return this;
+    }
+
+    public String getBodyText() {
+        if (StringUtils.isEmpty(bodyText)) {
+            return null;
+        }
+        //去掉空格
+        return bodyText.trim();
     }
 
     @Override

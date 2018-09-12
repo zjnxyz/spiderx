@@ -1,13 +1,12 @@
-package app.bravo.zu.spiderx.core.parser.render.html;
+package app.bravo.zu.spiderx.core.parser.render.json;
 
 import app.bravo.zu.spiderx.core.Page;
 import app.bravo.zu.spiderx.core.parser.bean.SpiderBean;
-import app.bravo.zu.spiderx.core.parser.bean.annotation.HtmlField;
+import app.bravo.zu.spiderx.core.parser.bean.annotation.JsonPath;
 import app.bravo.zu.spiderx.core.parser.render.BeanFieldRender;
 import app.bravo.zu.spiderx.core.parser.render.FieldDescribe;
 import app.bravo.zu.spiderx.core.utils.BeanUtils2;
 import app.bravo.zu.spiderx.core.utils.ReflectUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,44 +15,42 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static app.bravo.zu.spiderx.core.utils.BeanUtils2.convert;
 import static app.bravo.zu.spiderx.core.utils.ReflectUtils.haveSuperType;
 import static java.util.stream.Collectors.toList;
 
 /**
- * 单个html字段注入
+ * json path 渲染器
  *
  * @author riverzu
  */
-@Slf4j
-public class HtmlFieldBeanFieldRender implements BeanFieldRender {
+public class JsonPathBeanFieldRender implements BeanFieldRender {
 
     @Override
     public void doRender(Page page, BeanMap beanMap, FieldDescribe fieldDescribe) {
-        HtmlField htmlField = (HtmlField) fieldDescribe.getAnnotation();
+        JsonPath jsonPath = (JsonPath) fieldDescribe.getAnnotation();
         Class<?> type = fieldDescribe.getType();
-
         if (type.isArray()) {
             if (ReflectUtils.haveSuperType(type.getComponentType(), SpiderBean.class)) {
                 beanMap.put(fieldDescribe.getName(),
-                        beansInject((Class<? extends SpiderBean>) type.getComponentType(), page, htmlField).toArray());
-            }else {
+                        beansInject((Class<? extends SpiderBean>) type.getComponentType(), page, jsonPath).toArray());
+            } else {
                 //数组
-                beanMap.put(fieldDescribe.getName(), resolveList(page, htmlField, type).toArray());
+                beanMap.put(fieldDescribe.getName(), resolveList(page, jsonPath, type).toArray());
             }
         } else if (haveSuperType(type, List.class)) {
             Class genericClass = ReflectUtils.getGenericClass(fieldDescribe.getGenericType(), 0);
             if (ReflectUtils.haveSuperType(genericClass, SpiderBean.class)) {
                 //处理对象
                 beanMap.put(fieldDescribe.getName(),
-                        beansInject(genericClass, page, htmlField));
+                        beansInject(genericClass, page, jsonPath));
             } else {
                 //集合
-                beanMap.put(fieldDescribe.getName(), resolveList(page, htmlField, type));
+                beanMap.put(fieldDescribe.getName(), resolveList(page, jsonPath, type));
             }
-
         } else {
             //单个值
-            String value = page.getHtml().xpath(htmlField.xPath()).get();
+            String value = page.getHtml().xpath(jsonPath.path()).get();
             if (StringUtils.isEmpty(value)) {
                 return;
             }
@@ -62,23 +59,31 @@ public class HtmlFieldBeanFieldRender implements BeanFieldRender {
             } else {
                 beanMap.put(fieldDescribe.getName(), BeanUtils2.convert(value, type));
             }
-
         }
     }
 
-    private List<Object> resolveList(Page page, HtmlField htmlField, Class<?> type) {
-        List<String> values = page.getHtml().xpath(htmlField.xPath()).all();
+
+    private List<Object> resolveList(Page page, JsonPath jsonPath, Class<?> type) {
+        List<String> values = page.getJson().jsonPath(jsonPath.path()).all();
         if (CollectionUtils.isEmpty(values)) {
             return Collections.emptyList();
         }
-
         return values.stream().filter(StringUtils::isNotEmpty)
-                .map(t -> BeanUtils2.convert(t, type))
+                .map(t -> convert(t, type))
                 .collect(toList());
     }
 
-    private List<Object> beansInject(Class<? extends SpiderBean> clz, Page page, HtmlField htmlField) {
-        List<String> values = page.getHtml().xpath(htmlField.xPath()).all();
+
+    /**
+     * bean 集合注入
+     *
+     * @param clz      clz
+     * @param page     page
+     * @param jsonPath jsonPath
+     * @return list
+     */
+    private List<Object> beansInject(Class<? extends SpiderBean> clz, Page page, JsonPath jsonPath) {
+        List<String> values = page.getJson().jsonPath(jsonPath.path()).all();
         if (CollectionUtils.isEmpty(values)) {
             return Collections.emptyList();
         }

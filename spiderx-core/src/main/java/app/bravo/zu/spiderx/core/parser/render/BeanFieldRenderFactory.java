@@ -1,9 +1,9 @@
 package app.bravo.zu.spiderx.core.parser.render;
 
-import app.bravo.zu.spiderx.core.parser.bean.annotation.HtmlField;
-import app.bravo.zu.spiderx.core.parser.bean.annotation.RequestExtra;
-import app.bravo.zu.spiderx.core.parser.bean.annotation.RequestParameter;
+import app.bravo.zu.spiderx.core.parser.bean.annotation.*;
 import app.bravo.zu.spiderx.core.parser.render.html.HtmlFieldBeanFieldRender;
+import app.bravo.zu.spiderx.core.parser.render.json.JsonObjectBeanFieldRender;
+import app.bravo.zu.spiderx.core.parser.render.json.JsonPathBeanFieldRender;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +21,8 @@ public class BeanFieldRenderFactory {
         BEAN_FIELD_RENDER_MAP.put(HtmlField.class, new HtmlFieldBeanFieldRender());
         BEAN_FIELD_RENDER_MAP.put(RequestExtra.class, new RequestExtraBeanFieldRender());
         BEAN_FIELD_RENDER_MAP.put(RequestParameter.class, new RequestParameterBeanFieldRender());
+        BEAN_FIELD_RENDER_MAP.put(JsonPath.class, new JsonPathBeanFieldRender());
+        BEAN_FIELD_RENDER_MAP.put(JsonObject.class, new JsonObjectBeanFieldRender());
     }
 
     public BeanFieldRender get(Class<?> cls) {
@@ -29,11 +31,11 @@ public class BeanFieldRenderFactory {
 
 
     public static BeanFieldRenderFactory instance() {
-        return BeanFieldRenderFactoryHolder.factory;
+        return BeanFieldRenderFactoryHolder.FACTORY;
     }
 
     private static class BeanFieldRenderFactoryHolder {
-        private final static BeanFieldRenderFactory factory = new BeanFieldRenderFactory();
+        private final static BeanFieldRenderFactory FACTORY = new BeanFieldRenderFactory();
     }
 
 }

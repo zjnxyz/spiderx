@@ -17,10 +17,6 @@ public class RequestParameterBeanFieldRender implements BeanFieldRender {
 
     @Override
     public void doRender(Page page, BeanMap beanMap, FieldDescribe fieldDescribe) {
-        if (fieldDescribe == null) {
-            log.warn("字段描述信息不能为空");
-            return;
-        }
         RequestParameter requestParameter = (RequestParameter) fieldDescribe.getAnnotation();
         String name = StringUtils.isEmpty(requestParameter.value()) ? fieldDescribe.getName()
                 : requestParameter.value();
