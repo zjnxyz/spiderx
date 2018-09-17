@@ -1,8 +1,6 @@
 package app.bravo.zu.spiderx.http.request;
 
 import app.bravo.zu.spiderx.http.Site;
-import app.bravo.zu.spiderx.http.cookie.CookieProvider;
-import app.bravo.zu.spiderx.http.cookie.DefaultCookieProvider;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -28,6 +26,11 @@ public class HttpRequest implements Cloneable{
     public final static String FORM_MEDIA_TYPE = "application/x-www-form-urlencoded";
 
     public final static String HTML_CONTENT_TYPE = "text/html; charset=utf-8";
+
+    /**
+     * Referer
+     */
+    public final static String HEADER_REFERER = "Referer";
 
     private String url;
 
@@ -62,6 +65,10 @@ public class HttpRequest implements Cloneable{
      */
     private String charset;
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
     public HttpRequest(String url, HttpMethod httpMethod) {
         this();

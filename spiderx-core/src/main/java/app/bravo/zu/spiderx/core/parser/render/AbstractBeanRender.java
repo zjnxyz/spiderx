@@ -1,6 +1,7 @@
 package app.bravo.zu.spiderx.core.parser.render;
 
 import app.bravo.zu.spiderx.core.Page;
+import app.bravo.zu.spiderx.core.exception.SpiderException;
 import app.bravo.zu.spiderx.core.parser.bean.SpiderBean;
 import com.google.common.base.Predicate;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ public abstract class AbstractBeanRender implements BeanRender {
 
     @Override
     public SpiderBean inject(Class<? extends SpiderBean> clz, Page page) {
+
         try {
             SpiderBean bean = clz.newInstance();
             BeanMap beanMap = new BeanMap(bean);
@@ -52,6 +54,15 @@ public abstract class AbstractBeanRender implements BeanRender {
             log.warn("解析spiderBean出错了", e);
         }
         return null;
+    }
+
+    private SpiderBean create(Class<? extends SpiderBean> clz) throws SpiderException {
+        try {
+            return clz.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            log.warn("class=" + clz + ",初始化失败", e);
+            throw new SpiderException("初始化失败", e);
+        }
     }
 
     /**

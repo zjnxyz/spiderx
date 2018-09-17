@@ -7,8 +7,8 @@ import app.bravo.zu.spiderx.http.proxy.ProxySelector;
 import app.bravo.zu.spiderx.http.ua.Ua;
 import app.bravo.zu.spiderx.http.ua.UaSelector;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 public class Site implements Cloneable{
 
+    @Setter
     private String domain;
 
     private volatile String userAgent;
