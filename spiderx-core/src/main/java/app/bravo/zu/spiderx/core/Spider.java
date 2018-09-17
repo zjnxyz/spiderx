@@ -130,16 +130,6 @@ public class Spider {
     /**
      * 创建爬虫
      *
-     * @param name 爬虫名称
-     * @return Spider
-     */
-    public static Spider create(String name) {
-        return create(name, null);
-    }
-
-    /**
-     * 创建爬虫
-     *
      * @param name      爬虫名称
      * @param renderClz 结果渲染的class
      * @return Spider
@@ -160,11 +150,6 @@ public class Spider {
         return new Spider(name, renderClz, queue);
     }
 
-    public Spider renderClz(Class<? extends SpiderBean> clz) {
-        checkIfRunning();
-        this.clz = clz;
-        return this;
-    }
 
     public Spider taskQueue(Queue queue) {
         checkIfRunning();
@@ -300,7 +285,7 @@ public class Spider {
         while (!Thread.currentThread().isInterrupted() && stat.get() == STAT_RUNNING) {
             final Task task = queue.out();
             if (task == null) {
-                log.debug("当前 alive worker 数量:{}", workerPool.getThreadAlive());
+                log.debug("spider={}, alive worker 数量={}",name, workerPool.getThreadAlive());
                 if (workerPool.getThreadAlive() == 0 && exitWhenComplete) {
                     break;
                 }
@@ -313,15 +298,16 @@ public class Spider {
                         Constructor<? extends Downloader> ctor = downloaderClz.getDeclaredConstructor(Site.class);
                         Downloader downloader = ctor.newInstance(site);
 
-                        listeners.forEach(t -> t.beforeDownload(task, ctx));
+                        this.notifyObserver(listener -> listener.beforeDownload(task, ctx));
                         downloader.process(task)
-                                .doOnEach(t -> listeners.forEach(listener -> listener.afterDownload(t.get(), ctx)))
-                                .map(t -> Parser.instance().parse(clz, t, ctx))
-                                .subscribe(t -> pipelines.forEach(pipeline -> pipeline.process(t, task, ctx)),
+                                .map(t ->{
+                                    this.notifyObserver(listener -> listener.afterDownload(t, ctx));
+                                    return Parser.instance().parse(clz, t, ctx);
+                                }).subscribe(t -> pipelines.forEach(pipeline -> pipeline.process(t, task, ctx)),
                                         e -> log.error("数据爬取异常", e)
                                 );
                     } catch (Exception e) {
-                        log.warn("爬取任务执行异常", e);
+                        log.warn(String.format("spider=%s,爬取任务执行异常", name), e);
                     } finally {
                         signalNewUrl();
                     }
@@ -362,8 +348,13 @@ public class Spider {
         }
     }
 
+    /**
+     * 通知观察者
+     *
+     * @param consumer 观察者
+     */
     private void notifyObserver(Consumer<EventListener> consumer) {
-
+        listeners.forEach(consumer);
     }
 
 

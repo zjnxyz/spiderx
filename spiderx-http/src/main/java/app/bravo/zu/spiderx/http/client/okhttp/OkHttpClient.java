@@ -84,7 +84,6 @@ public class OkHttpClient implements HttpClient {
             okBuilder.connectTimeout(site.getConnectTimeout(), TimeUnit.MILLISECONDS)
                     .readTimeout(site.getConnectTimeout(), TimeUnit.MILLISECONDS);
         }
-
     }
 
     @Override

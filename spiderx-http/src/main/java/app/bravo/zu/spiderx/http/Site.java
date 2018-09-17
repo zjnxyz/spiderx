@@ -69,7 +69,7 @@ public class Site implements Cloneable{
     /**
      * 超时时间
      */
-    private int connectTimeout = 5000;
+    private int connectTimeout = 50000;
 
     /**
      * 重试次数

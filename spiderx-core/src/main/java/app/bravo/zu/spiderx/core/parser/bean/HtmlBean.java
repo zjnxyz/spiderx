@@ -5,7 +5,7 @@ package app.bravo.zu.spiderx.core.parser.bean;
  *
  * @author riverzu
  */
-public class HtmlBean extends AbstractSpiderBean {
+public class HtmlBean implements SpiderBean {
 
     private static final long serialVersionUID = -3622608674399213991L;
 

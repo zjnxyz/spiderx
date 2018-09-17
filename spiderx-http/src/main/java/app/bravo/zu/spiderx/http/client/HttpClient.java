@@ -35,6 +35,13 @@ public interface HttpClient {
         return execute(request);
     }
 
+    /**
+     * 下载完成，关闭资源
+     */
+    default void close() {
+
+    }
+
 
 
     /**
