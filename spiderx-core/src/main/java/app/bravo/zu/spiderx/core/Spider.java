@@ -20,11 +20,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -117,6 +119,11 @@ public class Spider {
      * 工作池
      */
     private CountableThreadPool workerPool;
+
+    /**
+     * 下载器
+     */
+    private List<Downloader> downloaders = new CopyOnWriteArrayList<>();
 
     private Spider(String name, Class<? extends SpiderBean> clz, Queue queue) {
         checkArgument(StringUtils.isNotEmpty(name), "爬虫名称不能为空");
@@ -295,11 +302,8 @@ public class Spider {
                 initialDelay();
                 workerPool.execute(() -> {
                     try {
-                        Constructor<? extends Downloader> ctor = downloaderClz.getDeclaredConstructor(Site.class);
-                        Downloader downloader = ctor.newInstance(site);
-
                         this.notifyObserver(listener -> listener.beforeDownload(task, ctx));
-                        downloader.process(task)
+                        getDownloader().process(task)
                                 .map(t ->{
                                     this.notifyObserver(listener -> listener.afterDownload(t, ctx));
                                     return Parser.instance().parse(clz, t, ctx);
@@ -317,9 +321,44 @@ public class Spider {
             }
         }
 
+        completed();
+
+        log.info("spider {} completed", name);
+    }
+
+    /**
+     * 爬虫任务已完成
+     */
+    private void completed() {
         //任务完成，爬虫结束
         stat.set(STAT_STOPPED);
-        log.info("spider {} complete");
+        //关闭
+        downloaders.forEach(Downloader::shutdown);
+    }
+
+    /**
+     * 获取下载器
+     *
+     * @return downloader
+     */
+    private synchronized Downloader getDownloader() {
+        if (CollectionUtils.isEmpty(downloaders)) {
+            IntStream.range(0, workerNum).boxed()
+                    .map(t -> initDownloader()).filter(Objects::nonNull)
+                    .forEach(downloaders::add);
+        }
+        Optional<Downloader> optional = downloaders.stream().filter(Downloader::isCompeted).findFirst();
+        return optional.orElse(initDownloader());
+    }
+
+    private Downloader initDownloader() {
+        try {
+            Constructor<? extends Downloader> ctor = downloaderClz.getDeclaredConstructor(Site.class);
+            return ctor.newInstance(site);
+        } catch (Exception e) {
+            log.error("初始化下载器异常", e);
+        }
+        return null;
     }
 
 

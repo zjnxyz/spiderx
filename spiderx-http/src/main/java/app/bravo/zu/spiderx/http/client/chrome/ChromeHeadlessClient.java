@@ -25,42 +25,39 @@ import static io.webfolder.cdp.event.Events.NetworkResponseReceived;
 @Slf4j
 public class ChromeHeadlessClient implements HttpClient {
 
-    /**
-     * 网站信息
-     */
-    private final Site site;
 
     /**
      * 浏览器工厂
      */
     private final SessionFactory factory;
 
-    private final Session session;
+    private Session session;
+
+    private final Site site;
 
 
     public ChromeHeadlessClient(Site site) {
         this.site = site;
         Launcher launcher = new Launcher();
         factory = launcher.launch();
-        session = factory.create();
-        session.getCommand().getNetwork().enable();
-        session.waitDocumentReady(site.getConnectTimeout());
-        session.addEventListener( (e,o) ->{
-            if (NetworkRequestIntercepted.equals(e)) {
-                RequestIntercepted ri = (RequestIntercepted) o;
-                boolean isRedirect = ri.getRedirectUrl() != null && ! ri.getRedirectUrl().isEmpty();
-                if (isRedirect) {
-                    log.info("RedirectUrl={}, statusCode={}",ri.getRedirectUrl(), ri.getResponseStatusCode());
-                }
-                session.getCommand().getNetwork().continueInterceptedRequest(ri.getInterceptionId());
-            }
-        });
 
     }
 
     @Override
     public Mono<HttpResponse> execute(HttpRequest request) {
         HttpResponse response = new HttpResponse();
+        session = factory.create();
+        session.getCommand().getNetwork().enable();
+        session.addEventListener((e, o) -> {
+            if (NetworkRequestIntercepted.equals(e)) {
+                RequestIntercepted ri = (RequestIntercepted) o;
+                boolean isRedirect = ri.getRedirectUrl() != null && !ri.getRedirectUrl().isEmpty();
+                if (isRedirect) {
+                    log.info("RedirectUrl={}, statusCode={}", ri.getRedirectUrl(), ri.getResponseStatusCode());
+                }
+                session.getCommand().getNetwork().continueInterceptedRequest(ri.getInterceptionId());
+            }
+        });
         session.addEventListener((e, o) ->{
             if (NetworkResponseReceived.equals(e)) {
                 ResponseReceived rr = (ResponseReceived) o;
@@ -73,6 +70,8 @@ public class ChromeHeadlessClient implements HttpClient {
             }
         });
         session.navigate(request.getUrl());
+        session.waitDocumentReady();
+
         response.setBodyText(session.getContent());
         return Mono.just(response);
     }

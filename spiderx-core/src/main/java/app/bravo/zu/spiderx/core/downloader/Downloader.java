@@ -25,4 +25,11 @@ public interface Downloader {
     default void shutdown() {
 
     }
+
+    /**
+     * 是否完成
+     *
+     * @return boolean
+     */
+    boolean isCompeted();
 }
