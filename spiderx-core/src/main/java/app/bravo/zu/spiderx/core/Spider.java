@@ -348,10 +348,16 @@ public class Spider {
                     .forEach(downloaders::add);
         }
         Optional<Downloader> optional = downloaders.stream().filter(Downloader::isCompeted).findFirst();
-        return optional.orElse(initDownloader());
+        if (!optional.isPresent()) {
+            Downloader downloader = initDownloader();
+            downloaders.add(downloader);
+            return downloader;
+        }
+        return optional.get();
     }
 
     private Downloader initDownloader() {
+        log.debug("initDownloader------");
         try {
             Constructor<? extends Downloader> ctor = downloaderClz.getDeclaredConstructor(Site.class);
             return ctor.newInstance(site);

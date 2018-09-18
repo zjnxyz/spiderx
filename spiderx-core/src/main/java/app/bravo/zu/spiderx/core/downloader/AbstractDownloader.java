@@ -42,7 +42,6 @@ public abstract class AbstractDownloader implements Downloader {
         }
         // 下载完成
         atomic.compareAndSet(false, true);
-
         return mono;
     }
 
