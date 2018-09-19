@@ -51,7 +51,6 @@ public class JsonObjectBeanFieldRender implements BeanFieldRender {
         }
         if (log.isDebugEnabled()) {
             log.debug("jsonPath={}, 对应的value={}", jsonObject.path(), value);
-            return;
         }
 
         beanMap.put(fieldDescribe.getName(), new Json(value).toObject(fieldDescribe.getType()));

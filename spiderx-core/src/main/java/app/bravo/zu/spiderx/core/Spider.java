@@ -442,7 +442,11 @@ public class Spider {
     private void initialDelay() {
         if (initialDelay > 0) {
             try {
-                TimeUnit.MILLISECONDS.sleep(initialDelay);
+                //为了每次休眠时间不一样，做一个随机值
+                long max = initialDelay + initialDelay/2;
+                Optional<Long> optional =new Random().longs(initialDelay/2, max)
+                    .limit(1).boxed().findFirst();
+                TimeUnit.MILLISECONDS.sleep(optional.orElse(initialDelay));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -56,15 +56,6 @@ public abstract class AbstractBeanRender implements BeanRender {
         return null;
     }
 
-    private SpiderBean create(Class<? extends SpiderBean> clz) throws SpiderException {
-        try {
-            return clz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            log.warn("class=" + clz + ",初始化失败", e);
-            throw new SpiderException("初始化失败", e);
-        }
-    }
-
     /**
      * 类型过滤
      */

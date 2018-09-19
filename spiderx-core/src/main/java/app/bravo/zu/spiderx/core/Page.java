@@ -19,6 +19,10 @@ import java.util.Map;
 @Builder
 public class Page implements Cloneable{
 
+    private final static String END_SUFFIX_1 = ";";
+
+    private final static String END_SUFFIX_2 = ")";
+
     /**
      * 请求
      */
@@ -55,7 +59,7 @@ public class Page implements Cloneable{
             return null;
         }
         if (json == null) {
-            json = new Json(response.getBodyText());
+            json = new Json(jsonp2Json(response.getBodyText()));
         }
         return json;
     }
@@ -75,6 +79,25 @@ public class Page implements Cloneable{
             return Collections.emptyMap();
         }
         return extras;
+    }
+
+    private String jsonp2Json(String jsonp) {
+        if (jsonp == null) {
+            return null;
+        }
+        jsonp = StringUtils.trim(jsonp);
+        if (StringUtils.endsWith(jsonp, END_SUFFIX_1)) {
+            jsonp = StringUtils.substringBeforeLast(jsonp, END_SUFFIX_1);
+            jsonp = StringUtils.trim(jsonp);
+        }
+        if (StringUtils.endsWith(jsonp, END_SUFFIX_2)) {
+            int first = jsonp.indexOf("(")+1;
+            int end = jsonp.lastIndexOf(END_SUFFIX_2);
+            String jsonStr = StringUtils.substring(jsonp, first, end);
+            jsonStr = StringUtils.trim(jsonStr);
+            return jsonStr;
+        }
+        return jsonp;
     }
 
     @Override

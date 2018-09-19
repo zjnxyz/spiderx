@@ -50,7 +50,7 @@ public class JsonPathBeanFieldRender implements BeanFieldRender {
             }
         } else {
             //单个值
-            String value = page.getHtml().xpath(jsonPath.path()).get();
+            String value = page.getJson().jsonPath(jsonPath.path()).get();
             if (StringUtils.isEmpty(value)) {
                 return;
             }
