@@ -7,6 +7,7 @@ import app.bravo.zu.spiderx.http.proxy.Proxy;
 import app.bravo.zu.spiderx.http.request.HttpRequest;
 import app.bravo.zu.spiderx.http.request.PostRequest;
 import app.bravo.zu.spiderx.http.response.HttpResponse;
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.commons.collections4.MapUtils;
@@ -111,7 +112,7 @@ public class OkHttpClient implements HttpClient {
                 try {
                     httpResponse.setBodyText(responseBody.string());
                 }catch (Exception e){
-                    log.error("httpResponse 获取响应体异常", e);
+                    log.error(String.format("httpResponse 获取响应体异常, 请求参数：%s", JSON.toJSONString(request)), e);
                 }
             }
             return httpResponse;
