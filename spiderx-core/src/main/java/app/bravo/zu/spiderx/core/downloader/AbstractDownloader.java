@@ -36,7 +36,9 @@ public abstract class AbstractDownloader implements Downloader {
             log.warn("task 和 request 都不能为空");
             mono = Mono.just(Page.error(task));
         } else {
-            mono = httpClient.execute(task.getRequest()).doOnError(t -> log.error("请求异常", t))
+            log.info("uuid={} url={} 准备 download", task.getUuid(), task.getUrl());
+            mono = httpClient.execute(task.getRequest())
+                    .doOnError(t -> log.error(String.format("uuid=%s, url=%s, 执行下载时异常", task.getUuid(), task.getUrl()), t))
                     .onErrorReturn(HttpResponse.error())
                     .map(t -> Page.builder().status(t.getStatus()).task(task).response(t).build());
         }

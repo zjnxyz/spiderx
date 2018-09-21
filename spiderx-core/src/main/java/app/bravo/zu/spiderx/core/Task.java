@@ -6,9 +6,6 @@ import lombok.Data;
 
 import java.util.Map;
 import java.util.UUID;
-
-import static app.bravo.zu.spiderx.http.request.HttpRequest.HEADER_REFERER;
-
 /**
  * 抓取任务
  *
@@ -38,6 +35,15 @@ public class Task implements Cloneable{
      */
     private int priority;
 
+    /**
+     * 任务链接
+     *
+     * @return url
+     */
+    public String getUrl() {
+        return request.getUrl();
+    }
+
     @Override
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();
@@ -49,8 +55,7 @@ public class Task implements Cloneable{
             Task task = (Task) clone();
             task.setUuid(UUID.randomUUID().toString());
             HttpRequest clone = (HttpRequest) request.clone();
-            clone.getHeaders().put(HEADER_REFERER, clone.getUrl());
-            clone.setUrl(url);
+            clone.referer(clone.getUrl());
             task.setRequest(clone);
             return task;
         } catch (CloneNotSupportedException e) {

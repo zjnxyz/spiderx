@@ -44,6 +44,7 @@ public class Parser {
      * @return spiderBean
      */
     public <T extends SpiderBean> T parse(Class<T> clz, Page page, SpiderContext ctx) {
+        long start = System.currentTimeMillis();
         BeanRender beanRender = BeanRenderFactory.instance().get(clz);
         if (beanRender == null) {
             log.warn("class={}, 找不到对应的BeanRender", clz);
@@ -55,6 +56,8 @@ public class Parser {
             return null;
         }
         requests(bean, page.getTask(), ctx);
+        log.info("uuid={}, url={}, 页面解析消耗 {} ms", page.getTask().getUuid(),
+            page.getTask().getUrl(), System.currentTimeMillis()-start);
         return (T) bean;
     }
 
@@ -121,7 +124,7 @@ public class Parser {
             list = Collections.singletonList(o);
         }
         return list.stream().filter(Objects::nonNull).map(Object::toString)
-                .peek(t -> log.info("下一页：{}", t))
+                .peek(t -> log.info("uuid={}, 下一页：{}", task.getUuid(), t))
                 .map(task::clone).filter(Objects::nonNull).collect(toList());
     }
 

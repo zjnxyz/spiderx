@@ -76,7 +76,7 @@ public class OkHttpClient implements HttpClient {
         if (site.isUseProxy()) {
             Proxy proxy = site.getProxy();
             if (proxy != null){
-                log.debug("proxy 信息：{}", proxy);
+                log.info("proxy 信息：{}", proxy);
                 okBuilder.proxy(proxy.toJavaNetProxy());
             }
         }

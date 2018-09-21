@@ -45,9 +45,7 @@ public class TbItemListPipeline implements Pipeline<TbItemList> {
             subSpider.run();
         }
         Task subTask = task.clone(LIST_URL);
-        Map<String, String> params = new HashMap<>();
-        params.put("page", String.valueOf(tbItemList.getPage() + 1));
-        subTask.getRequest().setParameters(params);
+        subTask.getRequest().parameter("page",  String.valueOf(tbItemList.getPage() + 1));
         ctx.getQueue().into(subTask);
     }
 }

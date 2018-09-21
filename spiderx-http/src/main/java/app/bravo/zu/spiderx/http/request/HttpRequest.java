@@ -30,7 +30,7 @@ public class HttpRequest implements Cloneable{
     /**
      * Referer
      */
-    public final static String HEADER_REFERER = "Referer";
+    private final static String HEADER_REFERER = "Referer";
 
     private String url;
 
@@ -80,6 +80,34 @@ public class HttpRequest implements Cloneable{
         this.parameters = new HashMap<>();
         this.headers = new HashMap<>();
         this.extras = new HashMap<>();
+    }
+
+    /**
+     * 设置参数
+     *
+     * @param key key
+     * @param value value
+     */
+    public void parameter(String key, String value) {
+        this.parameters.put(key, value);
+    }
+
+    /**
+     * 设置header 信息
+     * @param name name
+     * @param value value
+     */
+    public void header(String name, String value) {
+        this.headers.put(name, value);
+    }
+
+    /**
+     * 设置referer地址
+     *
+     * @param referer referer
+     */
+    public void referer(String referer) {
+        header(HEADER_REFERER, referer);
     }
 
 

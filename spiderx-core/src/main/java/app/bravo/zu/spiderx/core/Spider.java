@@ -127,8 +127,9 @@ public class Spider {
 
     private Spider(String name, Class<? extends SpiderBean> clz, Queue queue) {
         checkArgument(StringUtils.isNotEmpty(name), "爬虫名称不能为空");
+        checkArgument(clz != null, "渲染结果对象不能为空");
         this.name = name;
-        this.clz = clz == null ? SpiderBean.class : clz;
+        this.clz = clz;
         this.queue = queue == null ? new DefaultQueue() : queue;
         this.ctx = SpiderContext.instance(this.queue);
         this.downloaderClz = OkHttpDownloader.class;
@@ -301,6 +302,7 @@ public class Spider {
                 //间隔时间
                 initialDelay();
                 workerPool.execute(() -> {
+                    long start = System.currentTimeMillis();
                     try {
                         this.notifyObserver(listener -> listener.beforeDownload(task, ctx));
                         getDownloader().process(task)
@@ -314,6 +316,7 @@ public class Spider {
                         log.warn(String.format("spider=%s,爬取任务执行异常", name), e);
                     } finally {
                         signalNewUrl();
+                        log.info("uuid={},url={}, 执行共消耗 {}ms",task.getUuid(), task.getUrl(), System.currentTimeMillis()-start);
                     }
                 });
                 //等待子爬虫完成任务
@@ -322,7 +325,6 @@ public class Spider {
         }
 
         completed();
-
         log.info("spider {} completed", name);
     }
 
@@ -384,7 +386,7 @@ public class Spider {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    log.error("执行异常", e);
                 }
             } else {
                 log.info("爬虫 {} 全部任务都已执行完成", name);
