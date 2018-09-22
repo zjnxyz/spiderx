@@ -299,8 +299,6 @@ public class Spider {
                 }
                 waitNewUrl();
             } else {
-                //间隔时间
-                initialDelay();
                 workerPool.execute(() -> {
                     long start = System.currentTimeMillis();
                     try {
@@ -319,6 +317,9 @@ public class Spider {
                         log.info("uuid={},url={}, 执行共消耗 {}ms",task.getUuid(), task.getUrl(), System.currentTimeMillis()-start);
                     }
                 });
+                //间隔时间
+                initialDelay();
+
                 //等待子爬虫完成任务
                 waitSubSpiderCompleted();
             }
