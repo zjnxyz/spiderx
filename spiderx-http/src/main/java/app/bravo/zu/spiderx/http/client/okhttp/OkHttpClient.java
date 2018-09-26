@@ -15,14 +15,11 @@ import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Mono;
 
 import javax.net.ssl.*;
-
 import java.nio.charset.Charset;
 import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;
 
-import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.GET;
-import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.HEAD;
-import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.POST;
+import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.*;
 import static okhttp3.internal.Util.UTF_8;
 
 /**
@@ -108,14 +105,14 @@ public class OkHttpClient implements HttpClient {
             HttpResponse httpResponse = new HttpResponse();
             httpResponse.setStatus(t.code());
             ResponseBody responseBody = t.body();
-            httpResponse.setCharset(t.header(CONTENT_TYPE));
+            httpResponse.setContentType(t.header(CONTENT_TYPE));
             //处理header信息
             t.headers().names().forEach(t1 -> httpResponse.header(t1, t.header(t1)));
 
             if (responseBody != null) {
                 try {
                     httpResponse.setCharset(charset(responseBody));
-                    httpResponse.setBodyText(responseBody.string());
+                    httpResponse.setBodyBytes(responseBody.bytes());
                 }catch (Exception e){
                     log.error(String.format("httpResponse 获取响应体异常, 请求参数：%s", JSON.toJSONString(request)), e);
                 }

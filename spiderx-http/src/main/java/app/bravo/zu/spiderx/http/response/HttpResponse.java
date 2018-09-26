@@ -1,8 +1,10 @@
 package app.bravo.zu.spiderx.http.response;
 
 import lombok.Data;
+import okio.ByteString;
 import org.apache.commons.lang3.StringUtils;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +29,7 @@ public class HttpResponse implements Cloneable {
     /**
      * 字节body
      */
-    private Byte[] bodyBytes;
+    private byte[] bodyBytes;
 
     /**
      * 响应头
@@ -55,11 +57,13 @@ public class HttpResponse implements Cloneable {
     }
 
     public String getBodyText() {
-        if (StringUtils.isEmpty(bodyText)) {
+        if (StringUtils.isEmpty(bodyText) && bodyBytes == null) {
             return null;
         }
-        //去掉空格
-        return bodyText.trim();
+        if (StringUtils.isEmpty(bodyText)) {
+            this.bodyText = ByteString.of(bodyBytes).string(Charset.forName(charset)).trim();
+        }
+        return bodyText;
     }
 
     @Override
@@ -76,6 +80,15 @@ public class HttpResponse implements Cloneable {
         HttpResponse response = new HttpResponse();
         response.setStatus(404);
         return response;
+    }
+
+    /**
+     * 请求是否成功
+     *
+     * @return boolean
+     */
+    public boolean isSuccess() {
+        return status >= 200 && status < 300;
     }
 
 }

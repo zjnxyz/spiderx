@@ -1,12 +1,17 @@
 package app.bravo.zu.spiderx.file;
 
-import java.io.File;
-
 import app.bravo.zu.spiderx.http.Site;
 import app.bravo.zu.spiderx.http.client.HttpClient;
 import app.bravo.zu.spiderx.http.client.okhttp.OkHttpClient;
+import app.bravo.zu.spiderx.http.request.HttpRequest;
+import app.bravo.zu.spiderx.http.response.HttpResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+
+import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.HEAD;
 
 /**
  * okHttp文件下载器
@@ -22,6 +27,17 @@ public class OkHttpFileDownloader implements FileDownloader {
         if (StringUtils.isEmpty(savePath)) {
             savePath = getTmpPath();
         }
+        HttpRequest headRequest = new HttpRequest(request.getUrl(), HEAD);
+        if (MapUtils.isNotEmpty(request.getParameters())) {
+            headRequest.setParameters(request.getParameters());
+        }
+        if (MapUtils.isNotEmpty(request.getHeaders())) {
+            headRequest.setHeaders(request.getHeaders());
+        }
+        OkHttpUtil.getClient().execute(headRequest).filter(HttpResponse::isSuccess)
+                .map(t -> t.getHeaders().get("Content-Length"))
+                .filter(StringUtils::isNotEmpty).map(Integer::parseInt)
+                .subscribe(System.out::println);
 
         return null;
     }

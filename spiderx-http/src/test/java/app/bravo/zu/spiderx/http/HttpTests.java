@@ -2,13 +2,11 @@ package app.bravo.zu.spiderx.http;
 
 import app.bravo.zu.spiderx.http.client.HttpClient;
 import app.bravo.zu.spiderx.http.client.okhttp.OkHttpClient;
-import app.bravo.zu.spiderx.http.cookie.CookieProvider;
 import app.bravo.zu.spiderx.http.cookie.DefaultCookieProvider;
 import app.bravo.zu.spiderx.http.request.GetRequest;
 import app.bravo.zu.spiderx.http.response.HttpResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
 
 @Slf4j
 public class HttpTests {
@@ -30,7 +28,7 @@ public class HttpTests {
                 .cookieProvider(DefaultCookieProvider.instance(domain, "BAIDUID=7D68262F6E841CD700BEA825FDCB1AD9:FG=1"))
                 .build();
         HttpClient client = new OkHttpClient(site);
-        client.get(GetRequest.builder("https://www.baidu.com/").build()).doOnError(System.err::println)
+        client.get(GetRequest.builder("http://www.baidu.com/").build()).doOnError(System.err::println)
                 .onErrorReturn(HttpResponse.error())
                 .subscribe(System.out::println);
     }
