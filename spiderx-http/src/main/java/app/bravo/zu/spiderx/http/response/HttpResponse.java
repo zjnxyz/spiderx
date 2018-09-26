@@ -25,6 +25,11 @@ public class HttpResponse implements Cloneable {
     private String bodyText;
 
     /**
+     * 字节body
+     */
+    private Byte[] bodyBytes;
+
+    /**
      * 响应头
      */
     private Map<String, String> headers;
