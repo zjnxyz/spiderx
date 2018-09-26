@@ -126,7 +126,12 @@ public class HttpRequest implements Cloneable{
         /**
          * put
          */
-        PUT
+        PUT,
+
+        /**
+         * 只请求头信息
+         */
+        HEAD
     }
 
 

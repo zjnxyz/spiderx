@@ -15,11 +15,15 @@ import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Mono;
 
 import javax.net.ssl.*;
+
+import java.nio.charset.Charset;
 import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;
 
 import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.GET;
+import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.HEAD;
 import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.POST;
+import static okhttp3.internal.Util.UTF_8;
 
 /**
  * okHttp客户端
@@ -110,6 +114,7 @@ public class OkHttpClient implements HttpClient {
 
             if (responseBody != null) {
                 try {
+                    httpResponse.setCharset(charset(responseBody));
                     httpResponse.setBodyText(responseBody.string());
                 }catch (Exception e){
                     log.error(String.format("httpResponse 获取响应体异常, 请求参数：%s", JSON.toJSONString(request)), e);
@@ -119,13 +124,22 @@ public class OkHttpClient implements HttpClient {
         });
     }
 
+    private String charset(ResponseBody responseBody) {
+        MediaType contentType = responseBody.contentType();
+        Charset mt = contentType != null ? contentType.charset(UTF_8) : UTF_8;
+        if (mt != null) {
+            return mt.name();
+        }
+        return UTF_8.name();
+    }
+
 
 
     private static class OkHttpRequestGenerator {
 
          static Request.Builder getOkHttpRequestBuilder(HttpRequest request, Site site) {
             Request.Builder requestBuilder = new Request.Builder();
-            if (request.getMethod() == GET) {
+            if (request.getMethod() == GET || request.getMethod() == HEAD) {
                 HttpUrl httpUrl = HttpUrl.parse(request.getUrl());
                 if (httpUrl == null){
                     return null;
@@ -135,6 +149,11 @@ public class OkHttpClient implements HttpClient {
                     request.getParameters().forEach(httpUrlBuilder::addQueryParameter);
                 }
                 requestBuilder.url(httpUrlBuilder.build());
+                if (request.getMethod() == HEAD) {
+                    requestBuilder.head();
+                }else {
+                    requestBuilder.get();
+                }
             } else if (request.getMethod() == POST) {
                 RequestBody body;
                 PostRequest postRequest = (PostRequest) request;
