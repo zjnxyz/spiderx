@@ -6,11 +6,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import reactor.util.function.Tuple3;
+import reactor.util.function.Tuples;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,8 +31,8 @@ public class ThirdPartyFileConverter implements FileConverter {
         parameters.put("code", "83000");
         parameters.put("filelocation", "online");
         PostRequest request = PostRequest.builder(ACTION_URL).headers(getHeaders())
-                .parameters(parameters).fileTuple(new Tuple3<>("file", Files.probeContentType(Paths.get(file.getAbsolutePath())))).build();
-        return null;
+                .parameters(parameters).fileTuple(Tuples.of("file", "image/*", file)).build();
+        return doConvert(request);
     }
 
     @Override
@@ -46,6 +44,10 @@ public class ThirdPartyFileConverter implements FileConverter {
         parameters.put("filelocation", "online");
         PostRequest request = PostRequest.builder(ACTION_URL).headers(getHeaders())
                 .parameters(parameters).build();
+        return doConvert(request);
+    }
+
+    private String doConvert(PostRequest request) {
         ConvertResult result = OkHttpUtil.getClient().post(request)
                 .filter(HttpResponse::isSuccess)
                 .map(t -> JSON.parseObject(t.getBodyText(), ConvertResult.class)).block();

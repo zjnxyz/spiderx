@@ -12,4 +12,8 @@ public class ThirdPartyFileConverterTest {
         System.out.println(targetUrl);
 
     }
+
+    public void covertFile() {
+
+    }
 }
