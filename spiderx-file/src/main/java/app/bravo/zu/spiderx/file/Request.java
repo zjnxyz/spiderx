@@ -37,7 +37,7 @@ public class Request {
      */
     public String getFileName() {
         if (StringUtils.isEmpty(fileName)){
-            this.fileName = UUID.randomUUID().toString();
+            this.fileName = UUID.randomUUID().toString().replaceAll("-","");
         }
         return fileName;
 
