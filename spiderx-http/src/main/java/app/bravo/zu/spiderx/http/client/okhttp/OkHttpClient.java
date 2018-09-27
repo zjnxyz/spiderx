@@ -13,8 +13,10 @@ import okhttp3.*;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple3;
 
 import javax.net.ssl.*;
+import java.io.File;
 import java.nio.charset.Charset;
 import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;
@@ -157,9 +159,16 @@ public class OkHttpClient implements HttpClient {
                 if (!StringUtils.isEmpty(postRequest.getRequestBody())) {
                     body = RequestBody.create(JSON_MEDIA_TYPE, postRequest.getRequestBody());
                 } else {
-                    FormBody.Builder formBuilder = new FormBody.Builder();
+                    MultipartBody.Builder formBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
                     if (MapUtils.isNotEmpty(request.getParameters())){
-                        request.getParameters().forEach(formBuilder::addEncoded);
+                        request.getParameters().forEach(formBuilder::addFormDataPart);
+                    }
+                    if (postRequest.getFileTuple() != null) {
+                        Tuple3<String, String, File> fileTuple = postRequest.getFileTuple();
+                        RequestBody fileBody = RequestBody.create(MediaType.parse(fileTuple.getT2()),
+                                fileTuple.getT3());
+                        formBuilder.addFormDataPart(fileTuple.getT1(), fileTuple.getT3().getName(),
+                                fileBody);
                     }
                     body = formBuilder.build();
                 }

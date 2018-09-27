@@ -1,10 +1,11 @@
 package app.bravo.zu.spiderx.http.request;
 
 import app.bravo.zu.spiderx.http.Site;
-import app.bravo.zu.spiderx.http.cookie.CookieProvider;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import reactor.util.function.Tuple3;
 
+import java.io.File;
 import java.util.Map;
 
 import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.POST;
@@ -20,6 +21,11 @@ import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.POST;
 public class PostRequest extends HttpRequest{
 
     private String requestBody;
+
+    /**
+     * 上传的文件
+     */
+    private Tuple3<String, String, File> fileTuple;
 
     private PostRequest(String url) {
         super(url, POST);
@@ -60,6 +66,17 @@ public class PostRequest extends HttpRequest{
 
         public PostRequestBuilder site(Site site) {
             request.setSite(site);
+            return this;
+        }
+
+        /**
+         * 设置 上传的文件数据
+         *
+         * @param fileTuple 文件信息
+         * @return builder
+         */
+        public PostRequestBuilder fileTuple(Tuple3<String, String, File> fileTuple) {
+            request.setFileTuple(fileTuple);
             return this;
         }
 

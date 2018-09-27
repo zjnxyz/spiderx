@@ -1,33 +1,22 @@
 package app.bravo.zu.spiderx.file;
 
-import app.bravo.zu.spiderx.http.Site;
-import app.bravo.zu.spiderx.http.client.HttpClient;
-import app.bravo.zu.spiderx.http.client.okhttp.OkHttpClient;
 import app.bravo.zu.spiderx.http.request.GetRequest;
 import app.bravo.zu.spiderx.http.request.HttpRequest;
 import app.bravo.zu.spiderx.http.response.HttpResponse;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.HEAD;
 import static java.util.stream.Collectors.toList;
@@ -155,26 +144,4 @@ public class OkHttpFileDownloader implements FileDownloader {
         }
     }
 
-
-    private static class OkHttpUtil {
-
-        private OkHttpClient client;
-
-        private OkHttpUtil() {
-            client = new OkHttpClient(Site.builder().connectTimeout(30000).build());
-        }
-
-        /**
-         * 获取请求客户端
-         *
-         * @return HttpClient
-         */
-         static HttpClient getClient() {
-            return OkHttpUtilHolder.UTIL.client;
-        }
-
-        private static class OkHttpUtilHolder {
-            private static OkHttpUtil UTIL = new OkHttpUtil();
-        }
-    }
 }

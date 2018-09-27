@@ -1,10 +1,9 @@
 package app.bravo.zu.spiderx.file;
 
 
-import java.io.File;
-
-import okhttp3.MediaType;
 import org.junit.Test;
+
+import java.io.File;
 
 public class OkHttpFileDownloaderTest {
 
