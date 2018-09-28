@@ -21,7 +21,7 @@ public class SpiderTest {
     @Test
     public void testCrawlKandy() {
         Spider.create("kanDy_Spider", KanDy.class)
-                .url("http://kandy.cc/?s=vod-type-id-3.html")
+                .url("http://kandy.cc/?s=vod-type-id-1-p-11.html")
                 .initialDelay(3000).workerNum(2)
                 .pipeline(new KanDyDetailPipeline())
                 .listener(new KanDyEventListener())

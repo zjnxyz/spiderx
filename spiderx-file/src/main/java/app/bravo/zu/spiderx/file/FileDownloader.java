@@ -1,9 +1,8 @@
 package app.bravo.zu.spiderx.file;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.commons.io.FileUtils;
+
+import java.io.File;
 
 /**
  * 文件下载接口
@@ -81,7 +80,9 @@ public interface FileDownloader {
      * @param file 文件
      */
     default void clear(File file) {
-        FileUtils.deleteQuietly(file);
+        if (!FileUtils.deleteQuietly(file)) {
+            System.err.println("fileName=" + file.getAbsolutePath() + ",文件删除失败");
+        }
     }
 
 

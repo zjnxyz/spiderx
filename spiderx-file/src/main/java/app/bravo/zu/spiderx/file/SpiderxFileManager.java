@@ -1,27 +1,21 @@
 package app.bravo.zu.spiderx.file;
 
+import app.bravo.zu.spiderx.file.FileConverter.Format;
+import app.bravo.zu.spiderx.http.request.HttpRequest;
+import app.bravo.zu.spiderx.http.response.HttpResponse;
+import com.alibaba.fastjson.JSON;
+import lombok.Builder;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import javax.imageio.ImageIO;
-
-import com.alibaba.fastjson.JSON;
-
-import app.bravo.zu.spiderx.file.FileConverter.Format;
-import app.bravo.zu.spiderx.http.request.GetRequest;
-import app.bravo.zu.spiderx.http.request.HttpRequest;
-import app.bravo.zu.spiderx.http.response.HttpResponse;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
-import lombok.Builder;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import static app.bravo.zu.spiderx.file.SpiderFileUtils.calculateFileHash;
-import static app.bravo.zu.spiderx.file.SpiderFileUtils.isImage;
 import static app.bravo.zu.spiderx.file.SpiderFileUtils.isWebpImage;
 import static app.bravo.zu.spiderx.http.request.HttpRequest.HttpMethod.HEAD;
 
@@ -174,8 +168,10 @@ public class SpiderxFileManager {
             return upload(file);
         }finally {
            if (file != null){
-               log.debug("删除临时文件：{}", file.getAbsolutePath());
-               getDownloader().clear(file);
+               String path = file.getAbsolutePath();
+               log.debug("删除临时文件：{}", path);
+               file = null;
+               getDownloader().clear(path);
            }
         }
 

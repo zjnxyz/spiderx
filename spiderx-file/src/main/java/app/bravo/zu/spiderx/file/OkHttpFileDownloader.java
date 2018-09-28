@@ -9,7 +9,6 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Get;
 import org.apache.commons.collections4.MapUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
@@ -84,8 +83,8 @@ public class OkHttpFileDownloader implements FileDownloader {
         int num = length / DEFAULT_BLOCK_SIZE + 1;
         try(RandomAccessFile accessFile = new RandomAccessFile(file, "rw")) {
             accessFile.setLength(length);
-            results = Flux.range(0, num).filter(t1 -> t1*DEFAULT_BLOCK_SIZE < length)
-                    //.parallel(Runtime.getRuntime().availableProcessors()).runOn(Schedulers.parallel())
+            results = Flux.range(0, num).filter(t1 -> t1 * DEFAULT_BLOCK_SIZE < length).publishOn(Schedulers.elastic())
+//                    .parallel().runOn(Schedulers.newElastic("FILE_DOWNLOADER"))
                     .map(t1 ->{
                         long start = t1*DEFAULT_BLOCK_SIZE;
                         long end = start + DEFAULT_BLOCK_SIZE > length ? length : start + DEFAULT_BLOCK_SIZE;

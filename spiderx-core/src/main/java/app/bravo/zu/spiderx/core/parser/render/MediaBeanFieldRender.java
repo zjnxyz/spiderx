@@ -1,15 +1,9 @@
 package app.bravo.zu.spiderx.core.parser.render;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
-
 import app.bravo.zu.spiderx.core.Page;
 import app.bravo.zu.spiderx.core.exception.SpiderException;
-import app.bravo.zu.spiderx.core.parser.bean.SpiderBean;
 import app.bravo.zu.spiderx.core.parser.bean.annotation.Media;
 import app.bravo.zu.spiderx.core.parser.bean.annotation.Media.Location;
-import app.bravo.zu.spiderx.core.utils.ReflectUtils;
 import app.bravo.zu.spiderx.file.SpiderxFileManager;
 import app.bravo.zu.spiderx.file.SpiderxFileManager.UpdatedInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +12,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
+
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
 
 import static app.bravo.zu.spiderx.core.utils.ReflectUtils.getGenericClass;
 import static app.bravo.zu.spiderx.core.utils.ReflectUtils.haveSuperType;
@@ -86,8 +84,8 @@ public class MediaBeanFieldRender implements BeanFieldRender {
             }else {
                 return media.imageDomain()+t;
             }
-        }).parallel(Runtime.getRuntime().availableProcessors())
-                .runOn(Schedulers.parallel()).map(t -> {
+        }).publishOn(Schedulers.elastic())
+                .map(t -> {
                     if (media.location() == Location.LOCAL) {
                         File file = manager.download(t);
                         if (file == null) {
@@ -102,7 +100,7 @@ public class MediaBeanFieldRender implements BeanFieldRender {
                         }
                         return info.getUrl();
                     }
-        }).filter(StringUtils::isNotEmpty).sequential().collect(toList()).block();
+                }).filter(StringUtils::isNotEmpty).collect(toList()).block();
 
         if (CollectionUtils.isEmpty(targetUrls)) {
             return;
