@@ -30,6 +30,12 @@
 				<version>${project.version}</version>
 			</dependency>
 
+            <dependency>
+                <groupId>app.bravo.zu.spiderx</groupId>
+                <artifactId>spiderx-file</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
 			<dependency>
 				<groupId>io.projectreactor</groupId>
 				<artifactId>reactor-bom</artifactId>

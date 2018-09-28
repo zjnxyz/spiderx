@@ -2,6 +2,8 @@ package app.bravo.zu.spiderx.core.parser;
 
 import app.bravo.zu.spiderx.core.parser.bean.HtmlBean;
 import app.bravo.zu.spiderx.core.parser.bean.annotation.HtmlField;
+import app.bravo.zu.spiderx.core.parser.bean.annotation.Media;
+import app.bravo.zu.spiderx.core.parser.bean.annotation.Media.Location;
 import app.bravo.zu.spiderx.core.parser.bean.annotation.Next;
 import app.bravo.zu.spiderx.core.parser.bean.annotation.RequestExtra;
 import lombok.Data;
@@ -29,7 +31,7 @@ public class KanDy extends HtmlBean {
         @HtmlField(xPath = "//li/a/@title")
         private String title;
 
-        @HtmlField(xPath = "//li/a/img/@src")
+        @Media(path = "//li/a/img/@data-original", imageDomain = "http://kandy.cc", location = Location.SINA_IMG)
         private String imageUrl;
 
         @HtmlField(xPath = "//li/a/@href")

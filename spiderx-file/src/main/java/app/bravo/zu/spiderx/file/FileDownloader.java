@@ -81,21 +81,7 @@ public interface FileDownloader {
      * @param file 文件
      */
     default void clear(File file) {
-        if (file.isDirectory()) {
-            try {
-                FileUtils.deleteDirectory(file);
-            } catch (IOException e) {
-                throw new RuntimeException("目录："+ file.getAbsolutePath()+"/" + file.getName() +" 删除失败");
-            }
-            return;
-        }
-        if (file.isFile() && file.exists()) {
-            //是文件并且存在，删除
-            if (FileUtils.deleteQuietly(file)) {
-                throw new RuntimeException("文件："+file.getAbsolutePath()+"/"+file.getName()+" 删除失败");
-            }
-        }
-
+        FileUtils.deleteQuietly(file);
     }
 
 

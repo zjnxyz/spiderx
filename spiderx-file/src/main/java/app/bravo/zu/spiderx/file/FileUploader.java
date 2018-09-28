@@ -1,5 +1,7 @@
 package app.bravo.zu.spiderx.file;
 
+import java.io.File;
+
 /**
  * 文件上传器
  *
@@ -8,6 +10,12 @@ package app.bravo.zu.spiderx.file;
  */
 public interface FileUploader {
 
-
+    /**
+     * 上传文件
+     *
+     * @param file 文件
+     * @return 上传后的路径
+     */
+    String upload(File file);
 
 }

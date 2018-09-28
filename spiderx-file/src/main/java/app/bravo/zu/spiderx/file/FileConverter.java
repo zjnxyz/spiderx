@@ -17,7 +17,7 @@ public interface FileConverter {
      * @param targetFormat 目标格式
      * @return 转换后的文件地址
      */
-    String convert(File file, String targetFormat);
+    String convert(File file, Format targetFormat);
 
     /**
      * 转换
@@ -26,5 +26,31 @@ public interface FileConverter {
      * @param targetFormat 目标格式
      * @return 转换的文件地址
      */
-    String convert(String url, String targetFormat);
+    String convert(String url, Format targetFormat);
+
+    /**
+     * 格式
+     */
+    enum Format {
+
+        /**
+         * png 图片格式
+         */
+        PNG("png"),
+
+        /**
+         * jpg图片
+         */
+        JPG("jpg");
+
+        private String name;
+
+        Format(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
 }

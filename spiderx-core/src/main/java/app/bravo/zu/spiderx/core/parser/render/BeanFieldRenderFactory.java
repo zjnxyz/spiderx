@@ -23,6 +23,7 @@ public class BeanFieldRenderFactory {
         BEAN_FIELD_RENDER_MAP.put(RequestParameter.class, new RequestParameterBeanFieldRender());
         BEAN_FIELD_RENDER_MAP.put(JsonPath.class, new JsonPathBeanFieldRender());
         BEAN_FIELD_RENDER_MAP.put(JsonObject.class, new JsonObjectBeanFieldRender());
+        BEAN_FIELD_RENDER_MAP.put(Media.class, new MediaBeanFieldRender());
     }
 
     public BeanFieldRender get(Class<?> cls) {

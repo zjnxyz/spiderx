@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,7 +62,7 @@ public class DefaultUaResourceLoad implements UaResourceLoad {
     private static byte[] readInputStream(InputStream inStream) throws IOException {
         ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
         byte[] buffer = new byte[BUFFER_SIZE];
-        int len = 0;
+        int len;
         while ((len = inStream.read(buffer)) != -1) {
             if (len != 0) {
                 outSteam.write(buffer, 0, len);
@@ -81,7 +82,7 @@ public class DefaultUaResourceLoad implements UaResourceLoad {
      */
     private static String inputStream2String(InputStream inStream) throws IOException {
 
-        return new String(readInputStream(inStream), "UTF-8");
+        return new String(readInputStream(inStream), StandardCharsets.UTF_8);
     }
 
 }

@@ -24,22 +24,26 @@ public class ThirdPartyFileConverter implements FileConverter {
 
     private final static String ACTION_URL = "https://s4.aconvert.com/convert/convert-batch-win.php";
 
+    private ThirdPartyFileConverter() {
+
+    }
+
     @Override
-    public String convert(File file, String targetFormat) {
+    public String convert(File file, Format targetFormat) {
         Map<String, String> parameters = new HashMap<>(5);
-        parameters.put("targetformat", targetFormat);
+        parameters.put("targetformat", targetFormat.getName());
         parameters.put("code", "83000");
-        parameters.put("filelocation", "online");
+        parameters.put("filelocation", "local");
         PostRequest request = PostRequest.builder(ACTION_URL).headers(getHeaders())
                 .parameters(parameters).fileTuple(Tuples.of("file", "image/*", file)).build();
         return doConvert(request);
     }
 
     @Override
-    public String convert(String url, String targetFormat) {
+    public String convert(String url, Format targetFormat) {
         Map<String, String> parameters = new HashMap<>(5);
         parameters.put("file", url);
-        parameters.put("targetformat", targetFormat);
+        parameters.put("targetformat", targetFormat.getName());
         parameters.put("code", "83000");
         parameters.put("filelocation", "online");
         PostRequest request = PostRequest.builder(ACTION_URL).headers(getHeaders())
@@ -65,6 +69,15 @@ public class ThirdPartyFileConverter implements FileConverter {
         return headers;
     }
 
+
+    public static ThirdPartyFileConverter getInstance() {
+        return ThirdPartyFileConverterHolder.INSTANCE;
+    }
+
+    private static class ThirdPartyFileConverterHolder {
+        static ThirdPartyFileConverter INSTANCE = new ThirdPartyFileConverter();
+    }
+
     @Data
     private static class ConvertResult {
 
@@ -79,7 +92,7 @@ public class ThirdPartyFileConverter implements FileConverter {
 
         private String ext;
 
-        public String getTargetUrl() {
+        String getTargetUrl() {
             if (!SUCCESS_STATE.equals(state)) {
                 log.warn("文件转换失败");
                 return null;
