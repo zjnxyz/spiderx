@@ -65,7 +65,8 @@ public class OkHttpFileDownloader implements FileDownloader {
                         return FileInfo.fail();
                     }
                     return new FileInfo(file, true);
-                }).onErrorReturn(FileInfo.fail()).log().cast(FileInfo.class).block();
+                }).doOnError(e -> log.error("文件："+request.getUrl()+"下载出错了", e))
+                .onErrorReturn(FileInfo.fail()).log().cast(FileInfo.class).block();
 
         return fileInfo != null && fileInfo.getSuccess() ? fileInfo.getFile() : null;
     }

@@ -303,7 +303,7 @@ public class Spider {
                     long start = System.currentTimeMillis();
                     try {
                         this.notifyObserver(listener -> listener.beforeDownload(task, ctx));
-                        getDownloader().process(task)
+                        getDownloader().process(task).filter(Objects::nonNull)
                                 .map(t ->{
                                     this.notifyObserver(listener -> listener.afterDownload(t, ctx));
                                     return Parser.instance().parse(clz, t, ctx);

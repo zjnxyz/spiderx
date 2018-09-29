@@ -111,7 +111,7 @@ public class Parser {
         if (o == null) {
             return Collections.emptyList();
         }
-
+        Next next = field.getAnnotation(Next.class);
         List<Object> list;
         if (type.isArray()) {
             Object[] arr = (Object[]) o;
@@ -124,6 +124,7 @@ public class Parser {
             list = Collections.singletonList(o);
         }
         return list.stream().filter(Objects::nonNull).map(Object::toString)
+                .map(t -> next.domain()+t)
                 .peek(t -> log.info("uuid={}, 下一页：{}", task.getUuid(), t))
                 .map(task::clone).filter(Objects::nonNull).collect(toList());
     }

@@ -18,8 +18,8 @@ public class KanDy extends HtmlBean {
     @HtmlField(xPath = "//ul[@id='contents']/li")
     private List<Item> items;
 
-    @HtmlField(xPath = "//ul[@class='pagination']/li[15]/a/@href")
-    @Next
+    @HtmlField(xPath = "//ul[@class='pagination']/li/a[@class='next pagegbk']/@href")
+    @Next(domain = "http://www.kandy.cc")
     private String nextPageUrl;
 
 
@@ -30,8 +30,8 @@ public class KanDy extends HtmlBean {
 
         @HtmlField(xPath = "//li/a/@title")
         private String title;
-
-        @Media(path = "//li/a/img/@data-original", imageDomain = "http://kandy.cc", location = Location.SINA_IMG)
+        @HtmlField(xPath = "//li/a/img/@data-original")
+        //@Media(path = "//li/a/img/@data-original", imageDomain = "http://kandy.cc", location = Location.SINA_IMG)
         private String imageUrl;
 
         @HtmlField(xPath = "//li/a/@href")

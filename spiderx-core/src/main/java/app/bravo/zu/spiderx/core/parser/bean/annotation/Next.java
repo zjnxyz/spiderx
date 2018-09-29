@@ -13,5 +13,11 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Next {
 
+    /**
+     * 解决使用相对路径的问题
+     *
+     * @return string
+     */
+    String domain() default "";
 
 }

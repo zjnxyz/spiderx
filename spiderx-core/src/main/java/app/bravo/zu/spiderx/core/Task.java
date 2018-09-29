@@ -56,6 +56,7 @@ public class Task implements Cloneable{
             task.setUuid(UUID.randomUUID().toString());
             HttpRequest clone = (HttpRequest) request.clone();
             clone.referer(clone.getUrl());
+            clone.setUrl(url);
             task.setRequest(clone);
             return task;
         } catch (CloneNotSupportedException e) {
